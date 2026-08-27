@@ -1,4 +1,4 @@
-#Fitness Tracker — Microservices
+# Fitness Tracker — Microservices
 
 A Spring Boot–based fitness tracking backend built with a microservices architecture. It handles user registration/auth via Keycloak, activity logging, and AI-generated workout recommendations powered by Google Gemini — all wired together through service discovery, a centralized config server, and event-driven communication with Kafka.
 
