@@ -1,0 +1,17 @@
+// This detail page loads the verified activity recommendation endpoint and explains Kafka recommendation delay.
+import { useEffect, useState } from 'react';
+import { Alert, Box, Chip, Divider, Paper, Stack, Typography } from '@mui/material';
+import { ArrowBack, AutoAwesome, CheckCircle, HealthAndSafety, TipsAndUpdates } from '@mui/icons-material';
+import { Link, useParams } from 'react-router-dom';
+import { getActivities } from '../api/activityApi';
+import { getActivityRecommendation } from '../api/recommendationApi';
+import { ErrorState, LoadingState } from '../components/StatusState';
+import { displayType, formatDateTime } from '../utils/activity';
+
+export default function ActivityDetailPage() {
+  const { activityId } = useParams(); const [activity, setActivity] = useState(null); const [recommendation, setRecommendation] = useState(null); const [loading, setLoading] = useState(true); const [error, setError] = useState('');
+  useEffect(() => { (async () => { try { const activities = await getActivities(); const found = activities.find((item) => item.id === activityId); if (!found) { setError('Activity not found.'); return; } setActivity(found); try { setRecommendation(await getActivityRecommendation(activityId)); } catch (recommendationError) { if (recommendationError.response?.status !== 404) console.error('Recommendation request failed', recommendationError); } } catch (err) { setError(err.response?.data?.message || 'Could not load this activity.'); } finally { setLoading(false); } })(); }, [activityId]);
+  if (loading) return <LoadingState rows={4} />; if (error) return <ErrorState message={error} />; if (!activity) return null;
+  const section = (title, values, icon) => values?.length ? <Box><Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1 }}><Box color="primary.main">{icon}</Box><Typography variant="h6">{title}</Typography></Stack><Stack spacing={1}>{values.map((value) => <Stack direction="row" gap={1} key={value}><CheckCircle color="primary" fontSize="small" /><Typography>{value}</Typography></Stack>)}</Stack></Box> : null;
+  return <Stack spacing={3}><Typography component={Link} to="/activities" color="primary" sx={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 0.5 }}><ArrowBack fontSize="small" /> Back to activities</Typography><Paper sx={{ p: { xs: 2, sm: 4 } }}><Stack spacing={2}><Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={1}><Box><Chip label={displayType(activity.type)} color="primary" /><Typography variant="h4" sx={{ mt: 1 }}>{activity.duration} minutes</Typography><Typography color="text.secondary">{formatDateTime(activity.startTime)} · {activity.caloriesBurned} kcal</Typography></Box><AutoAwesome color="secondary" sx={{ fontSize: 48 }} /></Stack><Divider /><Typography variant="h5" sx={{ display: 'flex', gap: 1, alignItems: 'center' }}><AutoAwesome color="secondary" /> Gemini recommendation</Typography>{recommendation ? <Stack spacing={3}><Typography>{recommendation.recommendation}</Typography>{section('Improvements', recommendation.improvements, <TipsAndUpdates />)}{section('Suggestions', recommendation.suggestions, <AutoAwesome />)}{section('Safety', recommendation.safety, <HealthAndSafety />)}</Stack> : <Alert severity="info">Your recommendation is still being generated. Check back shortly after the activity has been processed.</Alert>}</Stack></Paper></Stack>;
+}

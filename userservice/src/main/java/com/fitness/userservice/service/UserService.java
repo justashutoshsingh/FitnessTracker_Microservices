@@ -41,8 +41,7 @@ public class UserService {
     }
 
     public RegisterResponse getUserById(String userId) {
-        User user =  userRepository.findById(userId)
-                .orElseThrow(()->new RuntimeException("User not found : " + userId));
+        User user =  userRepository.findByKeycloakId(userId);
 
         return mapperUtils.mapUserToResponse(user);
     }

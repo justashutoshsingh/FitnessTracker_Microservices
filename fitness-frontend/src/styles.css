@@ -1,0 +1,5 @@
+/* These global styles complement the MUI theme with responsive app-shell defaults. */
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+a { color: inherit; }
+.page-loader { min-height: 100vh; display: grid; place-items: center; }

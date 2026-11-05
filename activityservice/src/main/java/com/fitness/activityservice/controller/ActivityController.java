@@ -20,4 +20,10 @@ public class ActivityController {
         ActivityResponse response = activityService.addActivity(request , userKeycloakId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping
+    public ResponseEntity<java.util.List<ActivityResponse>> getUserActivities(
+            @RequestHeader("X-UserKeycloak-ID") String userKeycloakId) {
+        return ResponseEntity.ok(activityService.getUserActivities(userKeycloakId));
+    }
 }

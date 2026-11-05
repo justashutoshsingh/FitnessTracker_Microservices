@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -68,5 +70,13 @@ public class ActivityService {
 
         return mapperUtils.mapActivityToActivityResponse(savedActivity);
 
+    }
+
+
+    public List<ActivityResponse> getUserActivities(String userKeycloakId) {
+        List<Activity> activities = activityRepository.findByKeycloakId(userKeycloakId);
+        return activities.stream()
+                .map(mapperUtils::mapActivityToActivityResponse)
+                .collect(java.util.stream.Collectors.toList());
     }
 }

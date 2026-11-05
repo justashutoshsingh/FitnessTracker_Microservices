@@ -25,6 +25,10 @@ public class KycloakUserSyncFilter implements WebFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        if (exchange.getRequest().getPath().value().equals("/api/users/register")) {
+            return chain.filter(exchange);
+        }
+
         String userKeycloakId = exchange.getRequest().getHeaders().getFirst("X-UserKeycloak-ID");
 
         String token =  exchange.getRequest().getHeaders().getFirst("Authorization");
